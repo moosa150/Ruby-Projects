@@ -1,0 +1,56 @@
+module Filehandle
+    def fopen()
+        yield if block_given?
+        if @fname == "problem.csv"
+            @aFile = File.open(@fname, "r")
+        else
+            puts "Error! Wrong File Name.."
+        end
+    end
+end
+
+class Quiz
+    private
+    def initialize(fname)
+        @fname = fname
+        @aFile = ""
+        @content = ""
+        @question = ""
+        @correctans = 0
+        @wrongans = 0
+    end
+    include Filehandle
+    public
+    def questions
+        while !@aFile.eof?
+            @content = @aFile.readline.split(",")
+            print "What is #{@content[0]}: "
+            @question = gets
+            checkanswers
+        end
+        @aFile.close
+    end
+
+    def checkanswers
+        if @question == @content[1]
+            puts "Correct Answer.."
+            @correctans = @correctans +1
+      else
+        puts "Wrong Answer.." 
+            @wrongans = @wrongans +1
+      end
+    end
+
+    def result
+        print "\n\nNumber Correct Answers: #{@correctans}\n"
+        print "Number Wrong Answers: #{@wrongans}\n"
+    end
+end
+
+
+print "Enter File Name to Open: "
+name = gets.chomp
+q = Quiz.new(name)
+q.fopen { print " Recieved File Handling Input\n" }
+q.questions
+q.result
